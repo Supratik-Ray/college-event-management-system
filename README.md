@@ -1,48 +1,42 @@
-🎟️ Smart College Event Management System
+# 🎟️ Smart College Event Management System
 
-A role-based web application designed to manage college tech fest events efficiently using QR-based digital passes, real-time attendance tracking, and an interactive campus map.
+A role-based web application for managing college tech fest events using **QR-based digital passes**, **real-time attendance**, and an **interactive campus map**.
 
-This system replaces traditional Google Form–based registrations and manual check-ins with a streamlined, secure, and scalable solution for college events that include both internal and external participants.
+Designed to replace Google Form registrations and manual check-ins with a secure, efficient system that supports **both internal and external participants**.
 
-🚀 Key Features
-👤 Role-Based Access
+---
 
-Admin (Event Organizer) – creates and manages events, volunteers, and attendance
+## 🚀 Features
 
-Volunteer – handles on-ground QR scanning and entry verification
+### 👥 Role-Based Access
+- **Admin** – manages events, volunteers, and attendance
+- **Volunteer** – scans QR codes and verifies entry
+- **Participant** – registers for events and uses QR tickets
 
-Participant (Internal / External) – registers for events and uses QR tickets for entry
+---
 
-📅 Event Management
+### 📅 Event Management
+- Create and manage events
+- Assign venue, date/time, and capacity
+- Real-time registration and attendance stats
 
-Create, edit, and manage multiple events
+---
 
-Set venue, date/time, and participant capacity
+### 🎫 QR Code System
+- Unique QR per participant per event
+- Prevents duplicate or unauthorized entry
+- Automatic attendance marking on scan
 
-View registration and attendance statistics in real time
+---
 
-🎫 QR Code–Based Registration & Entry
+### 🗺️ Campus Event Map
+- Visual campus map with venue markers
+- Helps participants locate events easily
+- Especially useful for external students
 
-Unique QR code generated per participant per event
+---
 
-QR codes are validated at entry points
-
-Prevents duplicate or unauthorized entry
-
-Automatic attendance marking on scan
-
-🗺️ Campus Event Map
-
-Visual campus map with event venue markers
-
-Helps participants (especially external students) locate venues easily
-
-Reduces confusion and dependency on volunteers
-
-📊 Admin Dashboard & Analytics
-
-Live registration and attendance tracking
-
-Event-wise participant lists
-
-Export attendance data (CSV)
+### 📊 Admin Dashboard
+- Live event-wise analytics
+- Participant and attendance lists
+- Export attendance data (CSV)
