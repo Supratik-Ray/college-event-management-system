@@ -278,7 +278,7 @@ const MyTicket = () => {
                   src={selectedQR.qr}
                 />
               </div>
-
+ 
               <div className="text-center space-y-2 w-full">
                 <div className="flex items-center justify-center gap-2 text-sm text-gray-600">
                   <CalendarDays size={16} />
