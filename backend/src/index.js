@@ -1,4 +1,8 @@
 import express from "express";
+import dotenv from "dotenv";
+import connectToDB from "./config/db";
+
+dotenv.config();
 
 const app = express();
 
@@ -8,9 +12,19 @@ app.get("/", (req, res) => {
   res.status(200).json({ data: "hello world!" });
 });
 
-const port = 8000;
+const port = process.env.PORT || 5000;
 
-app.listen(port, () => console.log(`server listening on port ${port}`));
+async function startServer() {
+  try {
+    await connectToDB();
+    app.listen(port, () => console.log(`server listening on port ${port}`));
+  } catch (error) {
+    console.error("Error starting the server: ", error.message);
+    process.exit(1);
+  }
+}
+
+startServer();
 
 //ENDPOINTS
 
