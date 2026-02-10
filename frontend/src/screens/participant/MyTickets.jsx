@@ -89,9 +89,7 @@ const MyTicket = () => {
 
   return (
     <div className="bg-[#f6f7fb] min-h-screen flex flex-col text-[#111218]">
-    
       <main className="flex-1 w-full max-w-7xl mx-auto px-4 sm:px-6 py-6 sm:py-8">
-        
         <div className="flex flex-col gap-4 sm:gap-6 mb-8 sm:mb-10">
           <div>
             <h1 className="text-3xl sm:text-4xl font-black tracking-tight mb-2">
@@ -103,7 +101,6 @@ const MyTicket = () => {
             </p>
           </div>
 
-          
           <div className="flex bg-white p-1 rounded-lg border border-gray-200 shadow-sm overflow-x-auto">
             <button className="px-3 sm:px-4 py-2 text-xs sm:text-sm font-medium rounded bg-blue-700 text-white shadow-sm whitespace-nowrap">
               Upcoming
@@ -117,7 +114,6 @@ const MyTicket = () => {
           </div>
         </div>
 
-        
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
           {tickets.map((ticket, index) => (
             <article
@@ -162,11 +158,17 @@ const MyTicket = () => {
 
                   {ticket.active ? (
                     <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity bg-white/90 rounded-xl backdrop-blur-sm pointer-events-none">
-                      <ZoomIn size={32} className="text-blue-700 sm:w-10 sm:h-10" />
+                      <ZoomIn
+                        size={32}
+                        className="text-blue-700 sm:w-10 sm:h-10"
+                      />
                     </div>
                   ) : (
                     <div className="absolute inset-0 flex items-center justify-center">
-                      <Lock size={32} className="text-gray-400 sm:w-10 sm:h-10" />
+                      <Lock
+                        size={32}
+                        className="text-gray-400 sm:w-10 sm:h-10"
+                      />
                     </div>
                   )}
                 </div>
@@ -178,7 +180,10 @@ const MyTicket = () => {
                   </h3>
 
                   <div className="flex items-center justify-center gap-2 text-xs sm:text-sm text-gray-500 bg-gray-100 py-2 px-3 rounded-lg w-full">
-                    <CalendarDays size={14} className="sm:w-4 sm:h-4 shrink-0" />
+                    <CalendarDays
+                      size={14}
+                      className="sm:w-4 sm:h-4 shrink-0"
+                    />
                     <span className="whitespace-nowrap">{ticket.date}</span>
                     <span className="w-1 h-1 rounded-full bg-gray-400 mx-0.5 sm:mx-1"></span>
                     <span className="whitespace-nowrap">{ticket.time}</span>
@@ -191,7 +196,6 @@ const MyTicket = () => {
                 </div>
               </div>
 
-             
               <div className="p-3 sm:p-4 border-t border-gray-200 bg-gray-50">
                 {ticket.active ? (
                   <div className="grid grid-cols-2 gap-2 sm:gap-3">
@@ -216,7 +220,6 @@ const MyTicket = () => {
           ))}
         </div>
 
-        
         <div className="mt-12 sm:mt-16 flex flex-col items-center justify-center text-center gap-3 sm:gap-4 py-8 sm:py-12 border-t border-gray-200 px-4">
           <div className="p-3 bg-blue-100 rounded-full text-blue-700">
             <Headset size={24} className="sm:w-6.5 sm:h-6.5" />
