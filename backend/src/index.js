@@ -5,6 +5,7 @@ import authRouter from "./routers/authRouter.js";
 import eventRouter from "./routers/eventsRouter.js";
 import volunteeringRouter from "./routers/VolunteeringRouter.js";
 import participationsRouter from "./routers/participationsRouter.js";
+import { requireAuth } from "./middlewares/requireAuth.js";
 
 dotenv.config();
 
@@ -13,9 +14,9 @@ const app = express();
 app.use(express.json());
 
 app.use("/auth", authRouter);
-app.use("/events", eventRouter);
-app.use("/volunteering", volunteeringRouter);
-app.use("/participations", participationsRouter);
+app.use("/events", requireAuth, eventRouter);
+app.use("/volunteering", requireAuth, volunteeringRouter);
+app.use("/participations", requireAuth, participationsRouter);
 
 app.get("/", (req, res) => {
   res.status(200).json({ data: "hello world!" });

@@ -8,7 +8,8 @@ import {
   getEventParticipants,
   getEventVolunteers,
   updateEvent,
-} from "../controllers/eventsController";
+} from "../controllers/eventsController.js";
+import { requireRole } from "../middlewares/requireRole.js";
 
 const router = express.Router();
 
@@ -16,10 +17,16 @@ router.route("/").get(getAllEvents).post(createEvent);
 router
   .route("/:eventId")
   .get(getEventDetails)
-  .patch(updateEvent)
-  .delete(deleteEvent);
-router.route("/:eventId/participants").get(getEventParticipants);
-router.route("/:eventId/analytics").get(getEventAnalytics);
-router.route("/:eventId/volunteers").get(getEventVolunteers);
+  .patch(requireRole("ADMIN"), updateEvent)
+  .delete(requireRole("ADMIN"), deleteEvent);
+router
+  .route("/:eventId/participants")
+  .get(requireRole("ADMIN"), getEventParticipants);
+router
+  .route("/:eventId/analytics")
+  .get(requireRole("ADMIN"), getEventAnalytics);
+router
+  .route("/:eventId/volunteers")
+  .get(requireRole("ADMIN"), getEventVolunteers);
 
 export default router;

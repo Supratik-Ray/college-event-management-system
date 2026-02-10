@@ -3,12 +3,15 @@ import {
   checkInParticipant,
   getAllTickets,
   registerForEvent,
-} from "../controllers/participationsController";
+} from "../controllers/participationsController.js";
+import { requireRole } from "../middlewares/requireRole.js";
 
 const router = express.Router();
 
-router.route("/").post(registerForEvent);
-router.route("/me").get(getAllTickets);
-router.route("/:participationId/checkIn").post(checkInParticipant);
+router.route("/").post(requireRole("PARTICIPANT"), registerForEvent);
+router.route("/me").get(requireRole("PARTICIPANT"), getAllTickets);
+router
+  .route("/:participationId/checkIn")
+  .post(requireRole("VOLUNTEER"), checkInParticipant);
 
 export default router;

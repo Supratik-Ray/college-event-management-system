@@ -1,6 +1,6 @@
-import User from "../models/User";
+import User from "../models/User.js";
 import bcrypt from "bcryptjs";
-import { signToken } from "../utils/jwt";
+import { signToken } from "../utils/jwt.js";
 
 export async function signup(req, res) {
   const { name, email, password, role } = req.body;
@@ -14,15 +14,15 @@ export async function signup(req, res) {
   }
 
   const saltRound = 10;
-  const hashedPassword = await bcrypt.hash(password, saltRound);
+  const passwordHash = await bcrypt.hash(password, saltRound);
 
   const user = await User.create({
     name,
     email,
-    hashed_password: hashedPassword,
+    passwordHash,
     role,
   });
- 
+
   const token = signToken({ id: user.id, role: user.role });
 
   res.status(201).json({ message: "User successfully created!", token });
@@ -35,7 +35,7 @@ export async function login(req, res) {
     return res.status(401).json({ message: "Invalid credentials!" });
   }
 
-  const isMatch = bcrypt.compare(password, userFound.hashed_password);
+  const isMatch = bcrypt.compare(password, userFound.passwordHash);
 
   if (!isMatch) {
     return res.status(401).json({ message: "Invalid credentials!" });

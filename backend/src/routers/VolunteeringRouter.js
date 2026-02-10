@@ -3,11 +3,16 @@ import {
   assignVolunteer,
   getAllVolunteers,
   getAssignedEvents,
-} from "../controllers/VolunteeringController";
+} from "../controllers/VolunteeringController.js";
+import { requireRole } from "../middlewares/requireRole.js";
 
 const router = express.Router();
 
-router.route("/").get(getAllVolunteers).post(assignVolunteer);
-router.route("/me").get(getAssignedEvents);
+router
+  .route("/")
+  .get(requireRole("ADMIN"), getAllVolunteers)
+  .post(requireRole("ADMIN"), assignVolunteer);
+
+router.route("/me").get(requireRole("VOLUNTEER"), getAssignedEvents);
 
 export default router;
