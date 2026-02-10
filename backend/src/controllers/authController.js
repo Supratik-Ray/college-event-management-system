@@ -1,2 +1,47 @@
-export function signup(req,res){}
-export function login(req,res){}
+import User from "../models/User";
+import bcrypt from "bcryptjs";
+import { signToken } from "../utils/jwt";
+
+export async function signup(req, res) {
+  const { name, email, password, role } = req.body;
+
+  const foundUser = await User.findOne({ email });
+
+  if (foundUser) {
+    return res
+      .status(409)
+      .json({ message: "User with this email already exists" });
+  }
+
+  const saltRound = 10;
+  const hashedPassword = await bcrypt.hash(password, saltRound);
+
+  const user = await User.create({
+    name,
+    email,
+    hashed_password: hashedPassword,
+    role,
+  });
+ 
+  const token = signToken({ id: user.id, role: user.role });
+
+  res.status(201).json({ message: "User successfully created!", token });
+}
+
+export async function login(req, res) {
+  const { email, password } = req.body;
+  const userFound = await User.findOne({ email });
+  if (!userFound) {
+    return res.status(401).json({ message: "Invalid credentials!" });
+  }
+
+  const isMatch = bcrypt.compare(password, userFound.hashed_password);
+
+  if (!isMatch) {
+    return res.status(401).json({ message: "Invalid credentials!" });
+  }
+
+  const token = signToken({ id: userFound.id, role: userFound.role });
+
+  res.status(200).json({ message: "Successfully logged in!", token });
+}
