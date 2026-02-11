@@ -5,9 +5,20 @@
 
 import Event from "../models/Event.js";
 
-export function getAllEvents(req, res) {
+export async function getAllEvents(req, res) {
   //admin => event created by him
   //participant => all events
+
+  let events;
+  if (req.user.role === "ADMIN") {
+    events = await Event.find({ createdBy: req.user.id }).sort({
+      createdAt: -1,
+    });
+  } else {
+    events = await Event.find().sort({ createdAt: -1 });
+  }
+
+  res.status(200).json({ events });
 }
 export async function createEvent(req, res) {
   const event = await Event.create({
@@ -28,4 +39,13 @@ export function getEventAnalytics(req, res) {}
 export function getEventVolunteers(req, res) {}
 
 // GET /events/:eventId
-export function getEventDetails(req, res) {}
+export async function getEventDetails(req, res) {
+  const eventId = req.params.eventId;
+
+  const event = await Event.findById(eventId);
+  if (!event) {
+    return res.status(404).json({ message: "Event with this id not found" });
+  }
+
+  res.status(200).json({ event });
+}
