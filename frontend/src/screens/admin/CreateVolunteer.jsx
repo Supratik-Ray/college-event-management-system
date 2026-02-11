@@ -15,6 +15,7 @@ import {
   Eye,
   EyeOff,
 } from "lucide-react";
+import { useAuthContext } from "../../../hooks/useAuthContext";
 
 const CreateVolunteer = () => {
   const nameRef = useRef(null);
@@ -42,45 +43,45 @@ const CreateVolunteer = () => {
 
   const [events, setEvents] = useState([]);
 
+  const { auth } = useAuthContext();
+
   useEffect(() => {
     const fetchEvents = async () => {
       try {
-      const token = localStorage.getItem("token");
+        // const token = localStorage.getItem("token");
 
-      if (!token) {
-        console.log("Token not found, login required!");
-        return;
+        // if (!token) {
+        //   console.log("Token not found, login required!");
+        //   return;
+        // }
+
+        const res = await axios.get("http://localhost:8000/events", {
+          headers: {
+            Authorization: `Bearer ${auth.token}`,
+          },
+        });
+
+        const formattedEvents = res.data.events.map((event) => ({
+          id: event._id,
+          title: event.name,
+          status: "Active",
+          statusStyle: "bg-green-100 text-green-800",
+          time: `${new Date(event.startTime).toLocaleString()} - ${new Date(
+            event.endTime,
+          ).toLocaleString()}`,
+          venue: event.venue,
+          selected: false,
+          disabled: false,
+        }));
+
+        setEvents(formattedEvents);
+      } catch (error) {
+        console.log("Fetch events error:", error);
       }
+    };
 
-      const res = await axios.get("http://localhost:8000/events", {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      });
-
-      const formattedEvents = res.data.events.map((event) => ({
-        id: event._id,
-        title: event.name,
-        status: "Active",
-        statusStyle: "bg-green-100 text-green-800",
-        time: `${new Date(event.startTime).toLocaleString()} - ${new Date(
-          event.endTime
-        ).toLocaleString()}`,
-        venue: event.venue,
-        selected: false,
-        disabled: false,
-      }));
-
-      setEvents(formattedEvents);
-    } catch (error) {
-      console.log("Fetch events error:", error);
-    }
-  };
-
-  fetchEvents();
-}, []);
-
-
+    fetchEvents();
+  }, []);
 
   const generatePassword = (length = 10) => {
     const chars =
@@ -179,62 +180,56 @@ const CreateVolunteer = () => {
   };
 
   const handleSubmit = async (e) => {
-  e.preventDefault();
+    e.preventDefault();
 
-  const isValid = validateForm();
-  if (!isValid) return;
+    const isValid = validateForm();
+    if (!isValid) return;
 
-  try {
-    const token = localStorage.getItem("token");
+    try {
+      const selectedEvents = events.filter((e) => e.selected);
 
-    if (!token) {
-      alert("Login required!");
-      return;
+      const payload = {
+        name: formData.name,
+        email: formData.email,
+        password: formData.password,
+        events: selectedEvents.map((e) => e.id),
+      };
+
+      const res = await axios.post(
+        "http://localhost:8000/volunteering",
+        payload,
+        {
+          headers: {
+            Authorization: `Bearer ${auth.token}`,
+          },
+        },
+      );
+
+      alert(res.data.message || "Volunteer created and assigned successfully!");
+
+      // RESET FORM
+      setFormData({
+        name: "",
+        email: "",
+        password: "",
+        autoGenerate: false,
+      });
+
+      setSearchTerm("");
+      setErrors({ name: "", email: "", password: "", events: "" });
+
+      // UNSELECT ALL EVENTS
+      setEvents((prev) =>
+        prev.map((ev) => ({
+          ...ev,
+          selected: false,
+        })),
+      );
+    } catch (error) {
+      console.log(error);
+      alert(error.response?.data?.message || "Something went wrong!");
     }
-
-    const selectedEvents = events.filter((e) => e.selected);
-
-    const payload = {
-      name: formData.name,
-      email: formData.email,
-      password: formData.password,
-      events: selectedEvents.map((e) => e.id),
-    };
-
-    const res = await axios.post("http://localhost:8000/volunteering", payload, {
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
-    });
-
-    alert(res.data.message || "Volunteer created and assigned successfully!");
-
-    // RESET FORM
-    setFormData({
-      name: "",
-      email: "",
-      password: "",
-      autoGenerate: false,
-    });
-
-    setSearchTerm("");
-    setErrors({ name: "", email: "", password: "", events: "" });
-
-    // UNSELECT ALL EVENTS
-    setEvents((prev) =>
-      prev.map((ev) => ({
-        ...ev,
-        selected: false,
-      }))
-    );
-  } catch (error) {
-    console.log(error);
-    alert(error.response?.data?.message || "Something went wrong!");
-  }
-};
-
-
-
+  };
 
   return (
     <div className="bg-gray-200 text-[#111218] min-h-screen flex flex-col font-sans pb-20 lg:pb-0">
