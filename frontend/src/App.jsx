@@ -5,6 +5,8 @@ import Signup from "./screens/Auth/Signup";
 import CreateEvent from "./screens/admin/CreateEvent";
 import MyTicket from "./screens/participant/MyTickets";
 import CreateVolunteer from "./screens/admin/CreateVolunteer";
+import EventDetails from "./screens/participant/EventDetails";
+import AdminDashboard from "./screens/admin/AdminDashboard";
 
 const App = () => {
   return (
@@ -16,6 +18,8 @@ const App = () => {
       <Route path="/createevent" element={<CreateEvent />} />
       <Route path="/myticket" element={<MyTicket />} />
       <Route path="/createvolunteer" element={<CreateVolunteer />} />
+      <Route path="/eventdetails" element={<EventDetails/>} />
+      <Route path="/admindashboard" element={<AdminDashboard/>} />
     </Routes>
   );
 };
