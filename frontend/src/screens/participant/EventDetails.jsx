@@ -1,8 +1,20 @@
 import { useEffect, useState } from "react";
 import { useAuthContext } from "../../../hooks/useAuthContext";
 import { useParams } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
+
+import {
+  CalendarDays,
+  Users,
+  Ticket,
+  Trophy,
+  ClipboardList,
+  AlertTriangle,
+  CheckCircle2,
+} from "lucide-react";
 
 export default function EventDetails() {
+  const navigate = useNavigate();
   const [event, setEvent] = useState(null);
   const [loading, setLoading] = useState(true);
   const [isRegistering, setIsRegistering] = useState(false);
@@ -26,10 +38,18 @@ export default function EventDetails() {
       const data = await res.json();
 
       if (data.success) {
-        alert("Successfully registered");
-      } else {
-        alert(data.message || "Registration failed");
-      }
+  alert("Successfully registered");
+
+  setEvent((prev) => ({
+    ...prev,
+    hasRegistered: true,
+  }));
+
+  return;
+} else {
+  alert(data.message || "Registration failed");
+}
+
     } catch (error) {
       alert("Couldn't register to event!");
       console.log(error.message);
@@ -38,34 +58,49 @@ export default function EventDetails() {
     }
   }
 
- useEffect(() => {
-  if (!auth?.token) return;
+  useEffect(() => {
+    if (!auth?.token) return;
 
-  const fetchEventDetails = async () => {
-    try {
-      const res = await fetch(`http://localhost:8000/events/${eventId}`, {
-        headers: {
-          Authorization: `Bearer ${auth.token}`,
-        },
-      });
+    const fetchEventDetails = async () => {
+      try {
+        const res = await fetch(`http://localhost:8000/events/${eventId}`, {
+          headers: {
+            Authorization: `Bearer ${auth.token}`,
+          },
+        });
 
-      const data = await res.json();
+        if (!res.ok) {
+          navigate("*");
+          return;
+        }
 
-      setEvent({ ...data.event, hasRegistered: data.hasRegistered });
-    } catch (error) {
-      console.error(error);
-    } finally {
-      setLoading(false);
-    }
-  };
+        const data = await res.json();
 
-  fetchEventDetails();
-}, [eventId, auth?.token]);
+        setEvent(data);
+      } catch (error) {
+        console.error(error);
+        navigate("/404");
+      } finally {
+        setLoading(false);
+      }
+    };
 
+    fetchEventDetails();
+  }, [eventId, auth?.token, navigate]);
 
-  console.log(event);
-
-  if (loading) return <p>Loading...</p>;
+  if (loading)
+    return (
+      <div className="min-h-screen bg-gray-200 flex items-center justify-center px-4">
+        <div className="bg-white shadow-md border border-gray-200 rounded-2xl p-6 w-full max-w-md text-center">
+          <p className="text-gray-800 font-bold text-lg animate-pulse">
+            Loading Event Details...
+          </p>
+          <p className="text-gray-500 text-sm mt-2">
+            Please wait a moment
+          </p>
+        </div>
+      </div>
+    );
 
   const totalPrize = event.prizes.reduce((acc, prize) => acc + prize.amount, 0);
 
@@ -77,102 +112,114 @@ export default function EventDetails() {
     });
 
   return (
-    <div className="bg-linear-to-b from-slate-100 to-slate-200 min-h-screen pb-28">
+    <div className="bg-gray-200 min-h-screen pb-28">
       {/* CENTER CONTAINER */}
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-10">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-6 sm:pt-10">
         {/* HERO */}
         <div
-          className="relative rounded-3xl overflow-hidden shadow-2xl"
+          className="relative rounded-3xl overflow-hidden shadow-xl border border-gray-200"
           style={{
             backgroundImage: `url(${event.bannerImageUrl})`,
             backgroundSize: "cover",
             backgroundPosition: "center",
           }}
         >
-          <div
-            className="bg-linear-to-r from-[#0f172a]/90 via-[#0f172a]/80 to-[#1e293b]/80 
-                          p-8 md:p-10 lg:p-14 
-                          flex flex-col lg:flex-row 
-                          justify-between items-start lg:items-center gap-10"
-          >
-            <div className="text-white max-w-2xl">
-              {/* <div className="flex gap-3 mb-5">
-                <span className="bg-blue-600 text-xs px-4 py-1 rounded-full font-semibold shadow">
-                  CODING
-                </span>
-                <span className="bg-emerald-600 text-xs px-4 py-1 rounded-full font-semibold shadow">
-                  IN-PERSON
-                </span>
-              </div> */}
+          <div className="bg-gradient-to-r from-[#0f172a]/95 via-[#0f172a]/80 to-[#1e293b]/70 p-6 sm:p-10 lg:p-14">
+            <div className="flex flex-col lg:flex-row justify-between items-start lg:items-center gap-8">
+              {/* LEFT */}
+              <div className="text-white max-w-2xl">
+                <h1 className="text-2xl sm:text-4xl lg:text-5xl font-black leading-tight">
+                  {event.name}
+                </h1>
 
-              <h1 className="text-3xl sm:text-4xl lg:text-5xl font-extrabold mb-4 leading-tight">
-                {event.name}
-              </h1>
+                <p className="text-slate-300 text-sm sm:text-lg mt-3">
+                  {event.tagline}
+                </p>
 
-              <p className="text-slate-300 text-base sm:text-lg mb-6">
-                {event.tagline}
-              </p>
+                <div className="mt-6 grid grid-cols-1 sm:grid-cols-3 gap-3 text-sm text-slate-200">
+                  <div className="flex items-center gap-2 bg-white/10 px-4 py-2 rounded-xl">
+                    <CalendarDays size={16} className="text-blue-300" />
+                    <span>{formatDate(event.startTime)}</span>
+                  </div>
 
-              <div className="flex flex-wrap gap-6 text-sm text-slate-300">
-                <span>📅 {formatDate(event.startTime)}</span>
-                <span>
-                  👥 {event.teamSize.min}-{event.teamSize.max}
-                </span>
-                <span>🎟 ₹{event.entryFee}</span>
+                  <div className="flex items-center gap-2 bg-white/10 px-4 py-2 rounded-xl">
+                    <Users size={16} className="text-blue-300" />
+                    <span>
+                      {event.teamSize.min}-{event.teamSize.max}
+                    </span>
+                  </div>
+
+                  <div className="flex items-center gap-2 bg-white/10 px-4 py-2 rounded-xl">
+                    <Ticket size={16} className="text-blue-300" />
+                    <span>₹{event.entryFee}</span>
+                  </div>
+                </div>
               </div>
-            </div>
 
-            {/* Prize Card */}
-            <div className="w-full max-w-sm bg-white/10 backdrop-blur-xl p-8 rounded-2xl text-white text-center shadow-2xl">
-              <p className="text-slate-300 text-sm tracking-widest mb-2">
-                TOTAL PRIZE POOL
-              </p>
-              <h2 className="text-4xl font-bold text-amber-400 mb-3">
-                ₹{totalPrize.toLocaleString()}
-              </h2>
-              <p className="text-emerald-400 font-medium">
-                🏆 1st Prize: ₹{event.prizes[0].amount.toLocaleString()}
-              </p>
+              {/* RIGHT PRIZE CARD */}
+              <div className="w-full max-w-sm bg-white/10 backdrop-blur-xl p-6 sm:p-8 rounded-2xl text-white text-center shadow-xl border border-white/10">
+                <div className="flex items-center justify-center gap-2 text-slate-200 text-sm font-semibold">
+                  <Trophy size={18} className="text-amber-300" />
+                  TOTAL PRIZE POOL
+                </div>
+
+                <h2 className="text-3xl sm:text-4xl font-black text-amber-400 mt-4">
+                  ₹{totalPrize.toLocaleString()}
+                </h2>
+
+                <p className="text-emerald-300 font-semibold mt-3 text-sm sm:text-base flex items-center justify-center gap-2">
+                  <CheckCircle2 size={16} />
+                  1st Prize: ₹{event.prizes[0].amount.toLocaleString()}
+                </p>
+
+                {event.hasRegistered && (
+                  <div className="mt-5 bg-emerald-500/20 border border-emerald-300/30 text-emerald-200 text-xs sm:text-sm font-bold px-4 py-2 rounded-xl">
+                    ✅ Already Registered
+                  </div>
+                )}
+              </div>
             </div>
           </div>
         </div>
 
         {/* MAIN GRID */}
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-12 mt-16 items-start">
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 lg:gap-10 mt-10 items-start">
           {/* LEFT CONTENT */}
-          <div className="lg:col-span-2 space-y-12">
+          <div className="lg:col-span-2 space-y-6">
             {/* About */}
-            <div className="bg-white rounded-2xl p-8 shadow-md">
-              <h2 className="text-2xl font-bold mb-4 text-slate-800">
+            <div className="bg-white rounded-2xl p-6 sm:p-8 shadow-md border border-gray-200">
+              <h2 className="text-xl sm:text-2xl font-black text-gray-900 mb-4 flex items-center gap-2">
+                <ClipboardList size={22} className="text-[#1121d4]" />
                 About the Event
               </h2>
-              <p className="text-slate-600 leading-relaxed">
+
+              <p className="text-gray-600 leading-relaxed text-sm sm:text-base">
                 {event.description}
               </p>
             </div>
 
             {/* Prizes */}
-            <div className="bg-white rounded-2xl p-8 shadow-md">
-              <h2 className="text-2xl font-bold mb-8 text-slate-800">
-                🏆 Prizes & Rewards
+            <div className="bg-white rounded-2xl p-6 sm:p-8 shadow-md border border-gray-200">
+              <h2 className="text-xl sm:text-2xl font-black text-gray-900 mb-6 flex items-center gap-2">
+                <Trophy size={22} className="text-amber-500" />
+                Prizes & Rewards
               </h2>
 
-              <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
                 {event.prizes.map((prize, i) => (
                   <div
                     key={i}
-                    className="rounded-md p-6 border border-gray-200 text-center shadow-md 
-                               hover:scale-105 hover:shadow-lg 
-                               transition duration-300 
-                               bg-linear-to-br from-slate-50 to-white"
+                    className="rounded-2xl p-5 border border-gray-200 text-center shadow-sm hover:shadow-md hover:-translate-y-1 transition bg-gradient-to-br from-gray-50 to-white"
                   >
-                    <h3 className="font-semibold mb-2 text-slate-800">
+                    <h3 className="font-bold text-gray-800 mb-2 text-sm sm:text-base">
                       {prize.position}
                     </h3>
-                    <p className="text-2xl font-bold text-blue-600">
+
+                    <p className="text-xl sm:text-2xl font-black text-blue-600">
                       ₹{prize.amount.toLocaleString()}
                     </p>
-                    <p className="text-sm text-slate-600 mt-1">
+
+                    <p className="text-xs sm:text-sm text-gray-600 mt-2">
                       + {prize.perks}
                     </p>
                   </div>
@@ -181,44 +228,111 @@ export default function EventDetails() {
             </div>
 
             {/* Rules */}
-            <div className="bg-white rounded-2xl p-8 shadow-md">
-              <h2 className="text-2xl font-bold mb-6 text-slate-800">
-                📜 Rules & Requirements
+            <div className="bg-white rounded-2xl p-6 sm:p-8 shadow-md border border-gray-200">
+              <h2 className="text-xl sm:text-2xl font-black text-gray-900 mb-5 flex items-center gap-2">
+                <AlertTriangle size={22} className="text-red-500" />
+                Rules & Requirements
               </h2>
 
-              <ul className="space-y-4">
+              <ul className="space-y-3">
                 {event.rules.map((rule, i) => (
-                  <li key={i} className="flex gap-3 text-slate-600">
-                    <span className="text-emerald-500 font-bold">✔</span>
-                    {rule}
+                  <li
+                    key={i}
+                    className="flex gap-3 text-gray-700 text-sm sm:text-base"
+                  >
+                    <span className="text-emerald-600 font-black">✔</span>
+                    <span className="leading-relaxed">{rule}</span>
                   </li>
                 ))}
               </ul>
             </div>
           </div>
+
+          {/* RIGHT SIDEBAR */}
+          <div className="lg:col-span-1">
+            <div className="bg-white rounded-2xl p-6 sm:p-8 shadow-md border border-gray-200 sticky top-6">
+              <h3 className="text-lg font-black text-gray-900 mb-4">
+                Quick Info
+              </h3>
+
+              <div className="space-y-3 text-sm text-gray-700">
+                <div className="flex justify-between">
+                  <span className="font-semibold text-gray-500">Start Date</span>
+                  <span className="font-bold">{formatDate(event.startTime)}</span>
+                </div>
+
+                <div className="flex justify-between">
+                  <span className="font-semibold text-gray-500">End Date</span>
+                  <span className="font-bold">{formatDate(event.endTime)}</span>
+                </div>
+
+                <div className="flex justify-between">
+                  <span className="font-semibold text-gray-500">Entry Fee</span>
+                  <span className="font-bold">₹{event.entryFee}</span>
+                </div>
+
+                <div className="flex justify-between">
+                  <span className="font-semibold text-gray-500">Team Size</span>
+                  <span className="font-bold">
+                    {event.teamSize.min}-{event.teamSize.max}
+                  </span>
+                </div>
+              </div>
+
+              <button
+                disabled={event.hasRegistered || isRegistering}
+                className={`mt-8 w-full h-12 rounded-xl font-bold text-sm shadow-md transition flex items-center justify-center
+                  ${
+                    event.hasRegistered
+                      ? "bg-green-200 text-green-900 cursor-not-allowed"
+                      : "bg-[#1121d4] hover:bg-[#1121d4]/90 text-white"
+                  }
+                `}
+                onClick={handleRegistration}
+              >
+                {event.hasRegistered
+                  ? "Already Registered"
+                  : isRegistering
+                    ? "Registering..."
+                    : "Register Now"}
+              </button>
+            </div>
+          </div>
         </div>
       </div>
 
-      {/* Sticky Register Bar */}
-      <div className="fixed bottom-0 left-0 right-0 bg-white shadow-[0_-10px_30px_rgba(0,0,0,0.15)] px-6 py-4 flex justify-between items-center">
-        <div>
-          <p className="text-red-500 text-sm font-semibold">
-            Registration closes soon!
-          </p>
-          <p className="text-slate-500 text-sm">Entry Fee: ₹{event.entryFee}</p>
-        </div>
+      {/* Sticky Register Bar (Mobile) */}
+      <div className="lg:hidden fixed bottom-0 left-0 right-0 bg-white border-t border-gray-300 px-4 py-3 shadow-xl z-50">
+        <div className="flex items-center justify-between gap-4">
+          <div>
+            <p className="text-red-500 text-xs font-bold flex items-center gap-1">
+              <AlertTriangle size={14} />
+              Registration closing soon
+            </p>
 
-        <button
-          disabled={event.hasRegistered}
-          className="bg-linear-to-r cursor-pointer from-blue-600 to-indigo-600 hover:opacity-90 text-white px-8 py-3 rounded-xl font-semibold shadow-lg transition"
-          onClick={handleRegistration}
-        >
-          {event.hasRegistered
-            ? "Already registered!"
-            : isRegistering
-              ? "Registering..."
-              : "Register Now →"}
-        </button>
+            <p className="text-gray-600 text-xs mt-1">
+              Entry Fee: ₹{event.entryFee}
+            </p>
+          </div>
+
+          <button
+            disabled={event.hasRegistered}
+            onClick={handleRegistration}
+            className={`px-5 py-2 rounded-xl font-bold text-xs shadow-md transition
+              ${
+                event.hasRegistered
+                  ? "bg-green-200 text-green-900 cursor-not-allowed"
+                  : "bg-[#1121d4] hover:bg-[#1121d4]/90 text-white"
+              }
+            `}
+          >
+            {event.hasRegistered
+              ? "Registered"
+              : isRegistering
+                ? "..."
+                : "Register"}
+          </button>
+        </div>
       </div>
     </div>
   );
