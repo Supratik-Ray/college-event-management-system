@@ -30,7 +30,7 @@ export async function getAllEvents(req, res) {
           ...event._doc,
           registrationsCount,
         };
-      })
+      }),
     );
 
     res.status(200).json({ events: eventsWithCounts });
@@ -50,7 +50,7 @@ export async function createEvent(req, res) {
     res.status(201).json({ success: true, event });
   } catch (error) {
     console.log("Create Event Error:", error);
-    res.status(500).json({ message: "Failed to create event" });
+    res.status(500).json({ message: "Failed to create event" + error.message });
   }
 }
 
@@ -130,7 +130,7 @@ export async function getEventDetails(req, res) {
 
     const hasRegistered = !!(await Participation.findOne({ eventId, userId }));
 
-    res.status(200).json({ event: event.toObject(), hasRegistered });
+    res.status(200).json({ ...event.toObject(), hasRegistered });
   } catch (error) {
     console.log("Get Event Details Error:", error);
     res.status(500).json({ message: "Failed to fetch event details" });

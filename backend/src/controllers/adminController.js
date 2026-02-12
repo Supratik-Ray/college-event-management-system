@@ -3,7 +3,7 @@ import Volunteering from "../models/Volunteering.js";
 
 export const getDashboardStats = async (req, res) => {
   try {
-    // Total Registrations (only existing events)
+    // ✅ Total Registrations (only existing events)
     const registrationsData = await Participation.aggregate([
       {
         $lookup: {
@@ -20,7 +20,7 @@ export const getDashboardStats = async (req, res) => {
     const totalRegistrations =
       registrationsData.length > 0 ? registrationsData[0].total : 0;
 
-    //  Live Attendance (only existing events)
+    // ✅ Live Attendance (only existing events)
     const attendanceData = await Participation.aggregate([
       { $match: { checkedIn: true } },
       {
@@ -38,7 +38,7 @@ export const getDashboardStats = async (req, res) => {
     const liveAttendance =
       attendanceData.length > 0 ? attendanceData[0].total : 0;
 
-    // Active Volunteers (only existing users)
+    // ✅ Active Volunteers (only existing users)
     const volunteersData = await Volunteering.aggregate([
       {
         $lookup: {
@@ -60,7 +60,7 @@ export const getDashboardStats = async (req, res) => {
     const volunteersActive =
       volunteersData.length > 0 ? volunteersData[0].total : 0;
 
-    //  Revenue = entryFee * participants count (only existing events)
+    // ✅ Revenue = entryFee * participants count (only existing events)
     const revenueData = await Participation.aggregate([
       {
         $group: {
@@ -95,7 +95,7 @@ export const getDashboardStats = async (req, res) => {
     const revenueCollected =
       revenueData.length > 0 ? revenueData[0].revenueCollected : 0;
 
-    //  Final Response
+    // ✅ Final Response
     return res.status(200).json({
       totalRegistrations,
       liveAttendance,
