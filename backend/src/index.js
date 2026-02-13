@@ -22,7 +22,7 @@ app.use(express.json());
 
 app.use(
   cors({
-    origin: "https://college-event-management-system-in.vercel.app",
+    origin: "https://event-management-in.vercel.app",
     credentials: true,
   }),
 );
