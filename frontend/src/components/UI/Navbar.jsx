@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { Link, useNavigate, useLocation } from "react-router-dom";
-import { Ticket, Menu, X, LogOut } from "lucide-react";
+import { Ticket, Menu, X, LogOut, UserPlus } from "lucide-react";
 import { useAuthContext } from "../../../hooks/useAuthContext";
 
 export default function Navbar() {
@@ -32,11 +32,7 @@ export default function Navbar() {
   // Desktop Link Style (Full underline effect)
   const desktopLinkClass = (path) =>
     `relative font-semibold text-sm lg:text-base transition-colors 
-     ${
-       isActive(path)
-         ? "text-blue-700"
-         : "text-gray-600 hover:text-blue-600"
-     }
+     ${isActive(path) ? "text-blue-700" : "text-gray-600 hover:text-blue-600"}
      after:content-[''] after:absolute after:left-0 after:-bottom-1 
      after:h-[2px] after:w-full after:rounded-full after:bg-linear-to-r after:from-blue-600 after:to-indigo-600
      after:scale-x-0 after:origin-left after:transition-transform after:duration-300
@@ -109,6 +105,13 @@ export default function Navbar() {
                 className={desktopLinkClass("/admin/create-volunteer")}
               >
                 Create Volunteer
+              </Link>
+
+              <Link
+                to="/admin/assign-volunteer"
+                className={desktopLinkClass("/admin/assign-volunteer")}
+              >
+                Assign Volunteer
               </Link>
             </>
           )}
@@ -225,6 +228,13 @@ export default function Navbar() {
                 className={mobileLinkClass("/admin/create-volunteer")}
               >
                 Create Volunteer
+              </Link>
+              <Link
+                to="/admin/assign-volunteer"
+                onClick={() => setOpenMenu(false)}
+                className={mobileLinkClass("/admin/assign-volunteer")}
+              >
+                Assign Volunteer
               </Link>
             </>
           )}
