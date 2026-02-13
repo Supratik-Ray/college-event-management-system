@@ -7,6 +7,8 @@ import Signup from "./screens/Auth/Signup";
 import AdminDashboard from "./screens/admin/AdminDashboard";
 import CreateVolunteer from "./screens/admin/CreateVolunteer";
 import CreateEvent from "./screens/admin/CreateEvent";
+import AssignVolunteer from "./screens/admin/AssignVolunteer";
+
 //participant
 import EventListings from "./screens/participant/EventListings";
 import MyTicket from "./screens/participant/MyTickets";
@@ -39,6 +41,8 @@ const App = () => {
           <Route path="/admin/dashboard" element={<AdminDashboard />} />
           <Route path="/admin/create-event" element={<CreateEvent />} />
           <Route path="/admin/create-volunteer" element={<CreateVolunteer />} />
+          <Route path="/admin/assign-volunteer" element={<AssignVolunteer />} />
+
         </Route>
 
         {/* PARTICIPANT ROUTES */}
