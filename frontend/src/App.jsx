@@ -23,6 +23,9 @@ import Navbar from "./components/UI/Navbar";
 import QrScanner from "./screens/volunteer/QrScanner";
 import { Toaster } from "react-hot-toast";
 
+import Participants from "./screens/admin/Participants";
+import Volunteers from "./screens/admin/Volunteers";
+
 const App = () => {
   return (
     <>
@@ -42,7 +45,8 @@ const App = () => {
           <Route path="/admin/create-event" element={<CreateEvent />} />
           <Route path="/admin/create-volunteer" element={<CreateVolunteer />} />
           <Route path="/admin/assign-volunteer" element={<AssignVolunteer />} />
-
+          <Route path="/admin/participants" element={<Participants />} />
+          <Route path="/admin/volunteers" element={<Volunteers />} />
         </Route>
 
         {/* PARTICIPANT ROUTES */}
