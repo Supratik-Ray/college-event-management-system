@@ -22,6 +22,19 @@ const MyTicket = () => {
 
   //  Modal State
   const [selectedTicket, setSelectedTicket] = useState(null);
+    //  Stop background scroll when modal open
+  useEffect(() => {
+    if (selectedTicket) {
+      document.body.style.overflow = "hidden";
+    } else {
+      document.body.style.overflow = "auto";
+    }
+
+    return () => {
+      document.body.style.overflow = "auto";
+    };
+  }, [selectedTicket]);
+
 
   useEffect(() => {
     const fetchTickets = async () => {
@@ -72,7 +85,7 @@ const MyTicket = () => {
     pdf.save(`ticket-${id}.pdf`);
   };
 
-  //  Loading Skeleton UI
+  // ✅ Loading Skeleton UI
   if (loading) {
     return (
       <div className="min-h-screen bg-[#f6f6f8] px-4 sm:px-8 lg:px-10 py-8">
@@ -103,7 +116,7 @@ const MyTicket = () => {
     );
   }
 
-  //  Empty State UI
+  // ✅ Empty State UI
   if (!tickets.length) {
     return (
       <div className="min-h-screen bg-[#f6f6f8] flex items-center justify-center px-4">
@@ -280,7 +293,7 @@ const MyTicket = () => {
           })}
         </div>
 
-        {/*  Ticket Preview Modal */}
+        {/* ✅ Ticket Preview Modal */}
         {selectedTicket && (
           <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm px-4">
             <div className="bg-white w-full max-w-md rounded-2xl shadow-2xl border border-gray-200 overflow-hidden">
