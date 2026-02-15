@@ -29,7 +29,7 @@ import Volunteers from "./screens/admin/Volunteers";
 const App = () => {
   return (
     <>
-      <Toaster position="top-center" />
+      <Toaster position="top-center" reverseOrder={false} />
       <Navbar />
       <Routes>
         <Route path="/" element={<RootRedirect />} />
