@@ -4,11 +4,11 @@ import { useAuthContext } from "../../../hooks/useAuthContext";
 
 import {
   Users,
-  CalendarCheck2,
   Search,
   BadgeCheck,
   PlusCircle,
   CheckCircle2,
+  MapPin,
 } from "lucide-react";
 
 const AssignVolunteer = () => {
@@ -87,11 +87,11 @@ const AssignVolunteer = () => {
           `${baseURL}/volunteering/${selectedVolunteer}`,
           {
             headers: { Authorization: `Bearer ${auth.token}` },
-          },
+          }
         );
 
         setAssignedEventIds(
-          (res.data.assignedEventIds || []).map((id) => id.toString()),
+          (res.data.assignedEventIds || []).map((id) => id.toString())
         );
       } catch (error) {
         console.log("Fetch Assigned Error:", error);
@@ -121,7 +121,7 @@ const AssignVolunteer = () => {
     return availableEvents.filter(
       (event) =>
         event.name.toLowerCase().includes(searchEvent.toLowerCase()) ||
-        event.venue.toLowerCase().includes(searchEvent.toLowerCase()),
+        event.venue.toLowerCase().includes(searchEvent.toLowerCase())
     );
   }, [availableEvents, searchEvent]);
 
@@ -134,7 +134,7 @@ const AssignVolunteer = () => {
     setSelectedEvents((prev) =>
       prev.includes(eventId)
         ? prev.filter((id) => id !== eventId)
-        : [...prev, eventId],
+        : [...prev, eventId]
     );
   };
 
@@ -165,14 +165,14 @@ const AssignVolunteer = () => {
         },
         {
           headers: { Authorization: `Bearer ${auth.token}` },
-        },
+        }
       );
 
       alert(res.data.message || "Assigned successfully!");
 
       // update assigned list instantly
       setAssignedEventIds((prev) =>
-        Array.from(new Set([...prev, ...selectedEvents])),
+        Array.from(new Set([...prev, ...selectedEvents]))
       );
 
       // clear selection
@@ -186,14 +186,84 @@ const AssignVolunteer = () => {
     }
   };
 
+  // Skeleton Component
+  const Skeleton = ({ className }) => (
+    <div className={`animate-pulse bg-gray-200 rounded-xl ${className}`} />
+  );
+
+  // Assigned Events Skeleton (fetchingAssigned)
+  const AssignedEventsSkeleton = () => {
+    return (
+      <div className="space-y-3">
+        {Array.from({ length: 4 }).map((_, idx) => (
+          <div
+            key={idx}
+            className="p-4 rounded-xl border border-gray-200 bg-gray-50 flex justify-between items-start gap-3"
+          >
+            <div className="space-y-2 w-full">
+              <Skeleton className="h-4 w-3/5" />
+              <Skeleton className="h-3 w-2/5" />
+            </div>
+
+            <Skeleton className="h-6 w-20 rounded-full" />
+          </div>
+        ))}
+      </div>
+    );
+  };
+
   if (loading) {
     return (
-      <div className="min-h-screen bg-[#f6f6f8] flex items-center justify-center px-4">
-        <div className="bg-white shadow-md border border-gray-200 rounded-2xl p-6 w-full max-w-md text-center">
-          <p className="text-gray-800 font-bold text-lg animate-pulse">
-            Loading...
-          </p>
-          <p className="text-gray-500 text-sm mt-2">Please wait</p>
+      <div className="min-h-screen bg-[#f6f6f8] px-4 sm:px-8 py-8 pb-20">
+        <div className="max-w-6xl mx-auto space-y-6">
+          {/* Header Skeleton */}
+          <div className="bg-white rounded-2xl border border-gray-200 shadow-sm p-6 sm:p-8">
+            <div className="flex items-center gap-3">
+              <Skeleton className="w-10 h-10 rounded-2xl" />
+              <div className="space-y-2 w-full">
+                <Skeleton className="h-6 w-72" />
+                <Skeleton className="h-4 w-96" />
+              </div>
+            </div>
+
+            <div className="mt-6 space-y-3">
+              <Skeleton className="h-4 w-40" />
+              <Skeleton className="h-12 w-full" />
+              <Skeleton className="h-4 w-52" />
+            </div>
+          </div>
+
+          {/* Main Grid Skeleton */}
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+            {/* Assigned Skeleton */}
+            <div className="bg-white rounded-2xl border border-gray-200 shadow-sm p-6 sm:p-8 space-y-4">
+              <Skeleton className="h-6 w-60" />
+              <Skeleton className="h-4 w-80" />
+
+              <div className="space-y-3 mt-5">
+                <Skeleton className="h-16 w-full" />
+                <Skeleton className="h-16 w-full" />
+                <Skeleton className="h-16 w-full" />
+                <Skeleton className="h-16 w-full" />
+              </div>
+            </div>
+
+            {/* Available Skeleton */}
+            <div className="bg-white rounded-2xl border border-gray-200 shadow-sm p-6 sm:p-8 space-y-4">
+              <Skeleton className="h-6 w-60" />
+              <Skeleton className="h-4 w-80" />
+              <Skeleton className="h-12 w-full" />
+
+              <div className="space-y-3 mt-5">
+                <Skeleton className="h-16 w-full" />
+                <Skeleton className="h-16 w-full" />
+                <Skeleton className="h-16 w-full" />
+                <Skeleton className="h-16 w-full" />
+              </div>
+
+              <Skeleton className="h-12 w-full mt-6" />
+            </div>
+          </div>
         </div>
       </div>
     );
@@ -258,7 +328,9 @@ const AssignVolunteer = () => {
 
             <div className="mt-5 space-y-3 max-h-100 overflow-y-auto pr-2">
               {selectedVolunteer ? (
-                assignedEvents.length > 0 ? (
+                fetchingAssigned ? (
+                  <AssignedEventsSkeleton />
+                ) : assignedEvents.length > 0 ? (
                   assignedEvents.map((event) => (
                     <div
                       key={event._id}
@@ -268,14 +340,16 @@ const AssignVolunteer = () => {
                         <p className="font-black text-gray-900 text-sm sm:text-base">
                           {event.name}
                         </p>
-                        <p className="text-xs text-gray-500 mt-1">
-                          📍 {event.venue}
+
+                        <p className="text-xs text-gray-500 mt-1 flex items-center gap-1">
+                          <MapPin size={14} className="text-gray-400" />
+                          {event.venue}
                         </p>
                       </div>
 
                       <span
                         className={`px-3 py-1 text-xs font-bold rounded-full border ${getStatusStyle(
-                          getEventStatus(event),
+                          getEventStatus(event)
                         )}`}
                       >
                         {getEventStatus(event)}
@@ -326,17 +400,17 @@ const AssignVolunteer = () => {
                     <label
                       key={event._id}
                       className={`p-4 rounded-xl border flex items-start gap-3 transition
-    ${
-      selectedEvents.includes(event._id)
-        ? "border-blue-600 bg-blue-50"
-        : "border-gray-200 bg-white hover:bg-gray-50"
-    }
-    ${
-      getEventStatus(event) === "COMPLETED"
-        ? "opacity-60 cursor-not-allowed"
-        : "cursor-pointer"
-    }
-  `}
+                        ${
+                          selectedEvents.includes(event._id)
+                            ? "border-blue-600 bg-blue-50"
+                            : "border-gray-200 bg-white hover:bg-gray-50"
+                        }
+                        ${
+                          getEventStatus(event) === "COMPLETED"
+                            ? "opacity-60 cursor-not-allowed"
+                            : "cursor-pointer"
+                        }
+                      `}
                     >
                       <input
                         type="checkbox"
@@ -351,14 +425,16 @@ const AssignVolunteer = () => {
                           <p className="font-black text-gray-900 text-sm sm:text-base">
                             {event.name}
                           </p>
-                          <p className="text-xs text-gray-500 mt-1">
-                            📍 {event.venue}
+
+                          <p className="text-xs text-gray-500 mt-1 flex items-center gap-1">
+                            <MapPin size={14} className="text-gray-400" />
+                            {event.venue}
                           </p>
                         </div>
 
                         <span
                           className={`px-3 py-1 text-xs font-bold rounded-full border ${getStatusStyle(
-                            getEventStatus(event),
+                            getEventStatus(event)
                           )}`}
                         >
                           {getEventStatus(event)}
