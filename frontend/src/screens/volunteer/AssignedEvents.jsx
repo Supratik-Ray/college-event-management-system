@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useMemo } from "react";
 import axios from "axios";
-import { Search, CalendarCheck2, AlertTriangle, Loader } from "lucide-react";
+import { Search, CalendarCheck2, AlertTriangle } from "lucide-react";
 import EventCard from "../../components/volunteer/EventCard";
 import { useAuthContext } from "../../../hooks/useAuthContext";
 
@@ -54,22 +54,62 @@ const AssignedEvents = () => {
     });
   }, [assignedEvents, search, filter]);
 
+  // Skeleton Card Component (UI Only)
+  const SkeletonCard = () => {
+    return (
+      <div className="bg-white border border-gray-200 rounded-2xl shadow-sm overflow-hidden animate-pulse">
+        <div className="h-36 bg-gray-200"></div>
+
+        <div className="p-4 space-y-3">
+          <div className="h-4 bg-gray-200 rounded w-3/4"></div>
+          <div className="h-3 bg-gray-200 rounded w-2/4"></div>
+
+          <div className="flex gap-2 mt-4">
+            <div className="h-7 bg-gray-200 rounded-lg w-20"></div>
+            <div className="h-7 bg-gray-200 rounded-lg w-16"></div>
+          </div>
+
+          <div className="h-9 bg-gray-200 rounded-xl w-full mt-4"></div>
+        </div>
+      </div>
+    );
+  };
+
   if (loading) {
     return (
-      <div className="min-h-screen bg-[#f6f6f8] flex items-center justify-center px-4">
-        <div className="bg-white border border-gray-200 rounded-2xl shadow-lg p-8 w-full max-w-md text-center">
-          <div className="flex items-center justify-center gap-2 text-[#1121d4] font-black text-lg">
-            <Loader size={18} />
-            Loading Events
-          </div>
-          <p className="text-gray-500 text-sm mt-2">
-            Please wait while we fetch your assigned events...
-          </p>
+      <div className="bg-[#f6f6f8] min-h-screen">
+        <div className="max-w-7xl mx-auto px-4 sm:px-8 lg:px-10 py-6">
+          {/* Header Skeleton */}
+          <div className="flex flex-col gap-3 animate-pulse">
+            <div className="flex items-center gap-2">
+              <div className="size-10 rounded-2xl bg-gray-200"></div>
 
-          <div className="mt-6 space-y-3">
-            <div className="h-4 bg-gray-200 rounded w-4/5 mx-auto animate-pulse"></div>
-            <div className="h-4 bg-gray-200 rounded w-3/5 mx-auto animate-pulse"></div>
-            <div className="h-4 bg-gray-200 rounded w-2/5 mx-auto animate-pulse"></div>
+              <div className="space-y-2">
+                <div className="h-6 bg-gray-200 rounded w-40"></div>
+                <div className="h-4 bg-gray-200 rounded w-56"></div>
+              </div>
+            </div>
+
+            <div className="h-4 bg-gray-200 rounded w-72"></div>
+
+            {/* Search + Filters Skeleton */}
+            <div className="mt-4 bg-white border border-gray-200 rounded-2xl px-4 py-4 flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4 shadow-sm">
+              <div className="h-12 bg-gray-100 border border-gray-200 rounded-xl w-full lg:max-w-md"></div>
+
+              <div className="grid grid-cols-2 gap-2 sm:flex sm:w-auto sm:gap-3">
+                <div className="h-10 bg-gray-100 border border-gray-200 rounded-xl w-full sm:w-24"></div>
+                <div className="h-10 bg-gray-100 border border-gray-200 rounded-xl w-full sm:w-24"></div>
+                <div className="h-10 bg-gray-100 border border-gray-200 rounded-xl w-full sm:w-24"></div>
+                <div className="h-10 bg-gray-100 border border-gray-200 rounded-xl w-full sm:w-24"></div>
+              </div>
+            </div>
+          </div>
+
+          {/* Skeleton Cards Grid */}
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-5 my-8">
+            {Array.from({ length: 8 }).map((_, idx) => (
+              <SkeletonCard key={idx} />
+            ))}
           </div>
         </div>
       </div>
@@ -124,7 +164,7 @@ const AssignedEvents = () => {
                 <button
                   key={type}
                   onClick={() => setFilter(type)}
-                  className={`w-full px-4 py-2.5 font-bold text-xs sm:text-sm rounded-xl  transition capitalize whitespace-nowrap border
+                  className={`w-full px-4 py-2.5 font-bold text-xs sm:text-sm rounded-xl transition capitalize whitespace-nowrap border
                     ${
                       filter === type
                         ? "bg-[#1121d4] text-white border-[#1121d4] shadow-md shadow-[#1121d4]/20"
